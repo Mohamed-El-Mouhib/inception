@@ -1,0 +1,7 @@
+services:
+  nginx:
+    build: ./requirements/nginx
+    container_name: nginx_test
+    restart: always
+    ports:
+      - "443:443"
