@@ -1,7 +1,13 @@
 services:
   nginx:
+    image: nginx_test_name
     build: ./requirements/nginx
-    container_name: nginx_test
+    container_name: nginx
     restart: always
     ports:
       - "443:443"
+    volumes:
+      - test:/var/www/
+
+volumes:
+  test:
