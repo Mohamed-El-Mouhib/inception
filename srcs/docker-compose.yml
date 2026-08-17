@@ -1,13 +1,47 @@
 services:
   nginx:
-    image: nginx_test_name
     build: ./requirements/nginx
+    image: local_nginx
     container_name: nginx
     restart: always
     ports:
       - "443:443"
     volumes:
-      - test:/var/www/
+      - wp_volume:/var/www/html
+    networks:
+      - docker-network
+
+  wordpress:
+    build: ./requirements/wordpress
+    image: local_wordpress
+    container_name: wordpress
+    # restart: always
+    # ports:
+    #   - "9000:9000"
+    volumes:
+      - wp_volume:/var/www/html
+    networks:
+      - docker-network
+    depends_on:
+      - mariadb
+
+  mariadb:
+    build: ./requirements/mariadb
+    image: local_mariadb
+    container_name: mariadb
+    # ports:
+    #   - "3306:3306"
+    networks:
+      - docker-network
+    env_file:
+      - ../secrets/mariadb_secrets.env
+    volumes:
+      - DB:/home/mel-mouh/data
 
 volumes:
-  test:
+  wp_volume:
+  DB:
+
+networks:
+  docker-network:
+    driver: bridge
