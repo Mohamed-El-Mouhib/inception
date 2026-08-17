@@ -16,8 +16,6 @@ services:
     image: local_wordpress
     container_name: wordpress
     # restart: always
-    # ports:
-    #   - "9000:9000"
     volumes:
       - wp_volume:/var/www/html
     networks:
@@ -29,8 +27,6 @@ services:
     build: ./requirements/mariadb
     image: local_mariadb
     container_name: mariadb
-    # ports:
-    #   - "3306:3306"
     networks:
       - docker-network
     env_file:
