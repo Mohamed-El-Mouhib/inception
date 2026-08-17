@@ -25,9 +25,7 @@ RUN apk add --no-cache \
 
 WORKDIR	/var/www/html
 
-RUN sed -i 's/listen = 127.0.0.1:9000/listen = 0.0.0.0:9000/g' /etc/php83/php-fpm.d/www.conf
-
-# RUN ln -sf /dev/stdout /var/log/php8.3-fpm.log
+RUN	sed -i 's/listen = 127.0.0.1:9000/listen = 0.0.0.0:9000/g' /etc/php83/php-fpm.d/www.conf
 
 RUN	curl -o wordpress.tar.gz  https://wordpress.org/latest.tar.gz && \
 	tar -xzf wordpress.tar.gz --strip-components=1 && \
@@ -39,6 +37,7 @@ RUN	curl -O https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli
 
 RUN	ln -s /usr/bin/php83 /usr/bin/php
 
-COPY	--chmod=755 ./tools/setup.sh /usr/local/bin/setup.sh
+COPY	./tools/setup.sh /usr/local/bin/setup.sh
+RUN	chmod  +x /usr/local/bin/setup.sh
 
 ENTRYPOINT	["/usr/local/bin/setup.sh"]
