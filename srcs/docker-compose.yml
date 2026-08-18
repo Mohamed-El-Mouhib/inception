@@ -1,7 +1,7 @@
 services:
   nginx:
     build: ./requirements/nginx
-    image: local_nginx
+    image: nginx
     container_name: nginx
     restart: always
     ports:
@@ -10,12 +10,14 @@ services:
       - wp_volume:/var/www/html
     networks:
       - docker-network
+    depends_on:
+      - wordpress
 
   wordpress:
     build: ./requirements/wordpress
-    image: local_wordpress
+    image: wordpress
     container_name: wordpress
-    # restart: always
+    restart: always
     volumes:
       - wp_volume:/var/www/html
     networks:
@@ -25,14 +27,15 @@ services:
 
   mariadb:
     build: ./requirements/mariadb
-    image: local_mariadb
+    image: mariadb
     container_name: mariadb
+    restart: always
     networks:
       - docker-network
     env_file:
       - ../secrets/mariadb_secrets.env
     volumes:
-      - DB:/home/mel-mouh/data
+      - DB:/var/lib/mysql
 
 volumes:
   wp_volume:
