@@ -1,8 +1,30 @@
 #!/bin/sh
 
+# "========ENV======="
+#
+# $HOSTNAME       == localhost
+# $MARIADB        == mariadb
+# $DB_NAME        == wp_db
+# $WP_TITLE       == inception
+# $WP_ADMIN_MAIL  == drake@example.com
+# $WP_USER        == mel-mouh
+# $WP_USER_MAIL   == mel-mouh@42.fr
+# $WP_USER_ROLE   == author
+#
+# "========SECRETS======="
+#
+# $DB_ROOT_USER   == root
+# $DB_ROOT_PWD    == root4ever
+# $WP_ADMIN_LOGIN == befdrake
+# $WP_ADMIN_PWD   == born2die
+# $WP_USER_PWD    == randomPass
+#
+# "========================="
+
 # Check if mariadb is running before wordpress so we can run create/access the site
+# ENV instead of hardcoded crendetials
 echo "Waiting for MariaDB to be ready..."
-while ! mariadb-admin ping -h"mariadb" -u"root" -p"mq71sg" --silent; do
+while ! mariadb-admin ping -h"$MARIADB" -u"$DB_ROOT_USER" -p"$DB_ROOT_PWD" --silent; do
 	sleep 2
 done
 
@@ -15,29 +37,29 @@ if [ ! -f "/var/www/html/wp-config.php" ]; then
 
     # create the configuration file linking to mariadb
     wp config create \
-	    --dbname="wp_db" \
-	    --dbuser="root" \
-	    --dbpass="mq71sg" \
-	    --dbhost="mariadb" \
+	    --dbname="$DB_NAME" \
+	    --dbuser="$DB_ROOT_USER" \
+	    --dbpass="$DB_ROOT_PWD" \
+	    --dbhost="$MARIADB" \
 	    --allow-root
 
     echo "Installing WordPress..."
 
     # execute the automated install
     wp core install \
-	    --url="localhost" \
-	    --title="inception" \
-	    --admin_user="wp_drake" \
-	    --admin_password="wp_pass" \
-	    --admin_email="wp_drake@example.com" \
+	    --url="$HOSTNAME" \
+	    --title="$WP_TITLE" \
+	    --admin_user="$WP_ADMIN_LOGIN" \
+	    --admin_password="$WP_ADMIN_PWD" \
+	    --admin_email="$WP_ADMIN_MAIL" \
 	    --skip-email \
 	    --allow-root
 
     # create a standard user 
     wp user create \
-	    user_ user_@42.fr \
-	    --role=author \
-	    --user_pass=randomPass \
+	    $WP_USER $WP_USER_MAIL \
+	    --role=$WP_USER_ROLE \
+	    --user_pass=$WP_USER_PWD \
 	    --allow-root
  
     echo "WordPress successfully installed!"
@@ -45,11 +67,11 @@ else
 	if ! wp core is-installed --allow-root 2> /dev/null; then
 		echo "Config exists but database is empty. Running installation..."
 		wp core install \
-			--url="localhost" \
-			--title="inception" \
-			--admin_user="wp_drake" \
-			--admin_password="wp_pass" \
-			--admin_email="wp_drake@example.com" \
+			--url="$HOSTNAME" \
+			--title="$WP_TITLE" \
+			--admin_user="$WP_ADMIN_LOGIN" \
+			--admin_password="$WP_ADMIN_PWD" \
+			--admin_email="$WP_ADMIN_MAIL" \
 			--skip-email \
 			--allow-root
 	else
