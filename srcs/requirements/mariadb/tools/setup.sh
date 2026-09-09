@@ -6,13 +6,19 @@ set -e
 mkdir -p /run/mysqld /var/lib/mysql \
 	&& chown -R mysql:mysql /run/mysqld /var/lib/mysql;
 
-# echo "========================="
-# echo "ROOT_PWD:" $ROOT_PWD
-# echo "ADMIN_PWD:" $ADMIN_PWD
+# "========ENV======="
 #
-# echo "DB_NAME:" $DB_NAME
-# echo "ADMIN_LOGIN:" $ADMIN_LOGIN
-# echo "========================="
+# $HOSTNAME       == localhost
+# $DB_NAME        == wp_db
+# 
+# "========SECRETS======="
+#
+# $WP_ADMIN_LOGIN == befdrake
+# $WP_ADMIN_PWD   == born2die
+# $DB_ROOT_USER   == root
+# $DB_ROOT_PWD    == root4ever
+# 
+# "========================="
 
 # making sure that if the /var/lib/mysql/mysql doesn't exist it re initiate DB tables and grants
 # the user which is mariaDB, the ownership of that directory so the DB works fine
@@ -23,11 +29,11 @@ if [ ! -d "/var/lib/mysql/mysql" ]; then
     mariadb-install-db --user=mysql --datadir=/var/lib/mysql
     mariadbd --user=mysql --bootstrap << EOF
 FLUSH PRIVILEGES;
-GRANT ALL ON *.* TO 'root'@'%' IDENTIFIED BY '$ROOT_PWD' WITH GRANT OPTION;
-GRANT ALL ON *.* TO 'root'@'localhost' IDENTIFIED BY '$ROOT_PWD' WITH GRANT OPTION;
+GRANT ALL ON *.* TO '$DB_ROOT_USER'@'%' IDENTIFIED BY '$DB_ROOT_PWD' WITH GRANT OPTION;
+GRANT ALL ON *.* TO '$DB_ROOT_USER'@'$HOSTNAME' IDENTIFIED BY '$ROOT_PWD' WITH GRANT OPTION;
 CREATE DATABASE IF NOT EXISTS \`$DB_NAME\`;
-CREATE USER IF NOT EXISTS '$ADMIN_LOGIN'@'%' IDENTIFIED BY '$ADMIN_PWD';
-GRANT ALL ON \`$DB_NAME\`.* TO '$ADMIN_LOGIN'@'%';
+CREATE USER IF NOT EXISTS '$WP_ADMIN_LOGIN'@'%' IDENTIFIED BY '$WP_ADMIN_PWD';
+GRANT ALL ON \`$DB_NAME\`.* TO '$WP_ADMIN_LOGIN'@'%';
 DROP DATABASE IF EXISTS test ;
 FLUSH PRIVILEGES;
 EOF
