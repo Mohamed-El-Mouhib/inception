@@ -23,13 +23,9 @@ services:
     networks:
       - docker-network
     env_file:
-      - ../secrets/.env
+      - .env
     secrets:
-      - db_root_user
-      - db_root_pwd
-      - wp_admin_login
-      - wp_admin_pwd
-      - wp_user_pwd
+      - db_password.txt
     depends_on:
       - mariadb
     restart: always
@@ -41,12 +37,10 @@ services:
     networks:
       - docker-network
     env_file:
-      - ../secrets/.env
+      - .env
     secrets:
-      - db_root_user
-      - db_root_pwd
-      - wp_admin_login
-      - wp_admin_pwd
+      - db_root_password.txt
+      - db_password.txt
     volumes:
       - DB:/var/lib/mysql
     restart: always
@@ -68,16 +62,10 @@ volumes:
 
 # ======================================================
 secrets:
-  db_root_user:
-    file: ../secrets/db_root_user
-  db_root_pwd:
-    file: ../secrets/db_root_pwd
-  wp_admin_login:
-    file: ../secrets/wp_admin_login
-  wp_admin_pwd:
-    file: ../secrets/wp_admin_pwd
-  wp_user_pwd:
-    file: ../secrets/wp_user_pwd
+  db_root_password.txt:
+    file: ../secrets/db_root_password.txt
+  db_password.txt:
+    file: ../secrets/db_password.txt
 
 # ======================================================
 networks:
