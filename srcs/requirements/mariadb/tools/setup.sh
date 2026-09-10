@@ -10,20 +10,18 @@ mkdir -p /run/mysqld /var/lib/mysql \
 if [ ! -d "/var/lib/mysql/mysql" ]; then
     echo "MySQL data directory not found. Initializing database..."
 
-    DB_ROOT_USER=$(cat /run/secrets/db_root_user)
-    DB_ROOT_PWD=$(cat /run/secrets/db_root_pwd)
-    WP_ADMIN_USER=$(cat /run/secrets/wp_admin_login)
-    WP_ADMIN_PWD=$(cat /run/secrets/wp_admin_pwd)
+    DB_PWD=$(cat /run/secrets/db_password.txt)
+    DB_ROOT_PWD=$(cat /run/secrets/db_root_password.txt)
 
     # Initialize the system DB
     mariadb-install-db --user=mysql --datadir=/var/lib/mysql
     mariadbd --user=mysql --bootstrap << EOF
 FLUSH PRIVILEGES;
-GRANT ALL ON *.* TO '${DB_ROOT_USER}'@'%' IDENTIFIED BY '${DB_ROOT_PWD}' WITH GRANT OPTION;
-GRANT ALL ON *.* TO '${DB_ROOT_USER}'@'$HOSTNAME' IDENTIFIED BY '${DB_ROOT_PWD}' WITH GRANT OPTION;
+GRANT ALL ON *.* TO '$DB_ROOT_USER'@'%' IDENTIFIED BY '${DB_ROOT_PWD}' WITH GRANT OPTION;
+GRANT ALL ON *.* TO '$DB_ROOT_USER'@'$HOSTNAME' IDENTIFIED BY '${DB_ROOT_PWD}' WITH GRANT OPTION;
 CREATE DATABASE IF NOT EXISTS \`$DB_NAME\`;
-CREATE USER IF NOT EXISTS '${WP_ADMIN_USER}'@'%' IDENTIFIED BY '${WP_ADMIN_PWD}';
-GRANT ALL ON \`$DB_NAME\`.* TO '${WP_ADMIN_USER}'@'%';
+CREATE USER IF NOT EXISTS '$DB_USER'@'%' IDENTIFIED BY '${DB_PWD}';
+GRANT ALL ON \`$DB_NAME\`.* TO '$DB_USER'@'%';
 DROP DATABASE IF EXISTS test ;
 FLUSH PRIVILEGES;
 EOF
