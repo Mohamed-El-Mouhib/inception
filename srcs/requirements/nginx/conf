@@ -5,6 +5,8 @@ server {
 	root	/var/www/html;
 	index index.php index.html;
 
+	server_name mel-mouh.42.fr;
+
 	# tls settings 
 	ssl_protocols TLSv1.2 TLSv1.3;
 	ssl_ciphers HIGH:!aNULL:!MD5;
