@@ -21,10 +21,17 @@
 #
 # "========================="
 
+DB_ROOT_USER=$(cat /run/secrets/db_root_user)
+DB_ROOT_PWD=$(cat /run/secrets/db_root_pwd)
+WP_ADMIN_USER=$(cat /run/secrets/wp_admin_login)
+WP_ADMIN_PWD=$(cat /run/secrets/wp_admin_pwd)
+WP_USER_PWD=$(cat /run/secrets/wp_admin_pwd)
+
+
 # Check if mariadb is running before wordpress so we can run create/access the site
 # ENV instead of hardcoded crendetials
 echo "Waiting for MariaDB to be ready..."
-while ! mariadb-admin ping -h"$MARIADB" -u"$DB_ROOT_USER" -p"$DB_ROOT_PWD" --silent; do
+while ! mariadb-admin ping -h"$MARIADB" -u"${DB_ROOT_USER}" -p"${DB_ROOT_PWD}" --silent; do
 	sleep 2
 done
 
@@ -37,10 +44,10 @@ if [ ! -f "/var/www/html/wp-config.php" ]; then
 
     # create the configuration file linking to mariadb
     wp config create \
-	    --dbname="$DB_NAME" \
-	    --dbuser="$DB_ROOT_USER" \
-	    --dbpass="$DB_ROOT_PWD" \
-	    --dbhost="$MARIADB" \
+	    --dbname="$DB_NAME"        \
+	    --dbuser="${WP_ADMIN_USER}" \
+	    --dbpass="${WP_ADMIN_PWD}"  \
+	    --dbhost="$MARIADB"        \
 	    --allow-root
 
     echo "Installing WordPress..."
@@ -49,8 +56,8 @@ if [ ! -f "/var/www/html/wp-config.php" ]; then
     wp core install \
 	    --url="$HOSTNAME" \
 	    --title="$WP_TITLE" \
-	    --admin_user="$WP_ADMIN_LOGIN" \
-	    --admin_password="$WP_ADMIN_PWD" \
+	    --admin_user="${WP_ADMIN_USER}" \
+	    --admin_password="${WP_ADMIN_PWD}" \
 	    --admin_email="$WP_ADMIN_MAIL" \
 	    --skip-email \
 	    --allow-root
@@ -59,7 +66,7 @@ if [ ! -f "/var/www/html/wp-config.php" ]; then
     wp user create \
 	    $WP_USER $WP_USER_MAIL \
 	    --role=$WP_USER_ROLE \
-	    --user_pass=$WP_USER_PWD \
+	    --user_pass=${WP_USER_PWD} \
 	    --allow-root
  
     echo "WordPress successfully installed!"
@@ -69,8 +76,8 @@ else
 		wp core install \
 			--url="$HOSTNAME" \
 			--title="$WP_TITLE" \
-			--admin_user="$WP_ADMIN_LOGIN" \
-			--admin_password="$WP_ADMIN_PWD" \
+			--admin_user="${WP_ADMIN_USER}" \
+			--admin_password="${WP_ADMIN_PWD}" \
 			--admin_email="$WP_ADMIN_MAIL" \
 			--skip-email \
 			--allow-root
