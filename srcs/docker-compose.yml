@@ -23,7 +23,13 @@ services:
     networks:
       - docker-network
     env_file:
-      - .env
+      - ../secrets/.env
+    secrets:
+      - db_root_user
+      - db_root_pwd
+      - wp_admin_login
+      - wp_admin_pwd
+      - wp_user_pwd
     depends_on:
       - mariadb
     restart: always
@@ -35,7 +41,12 @@ services:
     networks:
       - docker-network
     env_file:
-      - .env
+      - ../secrets/.env
+    secrets:
+      - db_root_user
+      - db_root_pwd
+      - wp_admin_login
+      - wp_admin_pwd
     volumes:
       - DB:/var/lib/mysql
     restart: always
@@ -54,6 +65,19 @@ volumes:
       type: none
       o: bind
       device: /home/mel-mouh/data/db
+
+# ======================================================
+secrets:
+  db_root_user:
+    file: ../secrets/db_root_user
+  db_root_pwd:
+    file: ../secrets/db_root_pwd
+  wp_admin_login:
+    file: ../secrets/wp_admin_login
+  wp_admin_pwd:
+    file: ../secrets/wp_admin_pwd
+  wp_user_pwd:
+    file: ../secrets/wp_user_pwd
 
 # ======================================================
 networks:
